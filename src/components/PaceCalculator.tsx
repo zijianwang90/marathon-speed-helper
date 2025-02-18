@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,9 +34,9 @@ const PaceCalculator = () => {
 
   const calculateRoadPace = (speedKmh: number) => {
     const actualSpeed = speedKmh * 1.04; // 考虑跑步机到路跑的转换
-    const minutesPerUnit = 60 / actualSpeed; // 每单位距离所需分钟数
-    const minutes = Math.floor(minutesPerUnit);
-    const seconds = Math.round((minutesPerUnit - minutes) * 60);
+    const minutesPerKm = 60 / actualSpeed;
+    const minutes = Math.floor(minutesPerKm);
+    const seconds = Math.round((minutesPerKm - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
