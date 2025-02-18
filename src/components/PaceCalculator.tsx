@@ -33,7 +33,7 @@ const PaceCalculator = () => {
   };
 
   const calculateRoadPace = (speedKmh: number) => {
-    const actualSpeed = speedKmh * 1.04; // 考虑跑步机到路跑的转换
+    const actualSpeed = speedKmh;
     const minutesPerKm = 60 / actualSpeed;
     const minutes = Math.floor(minutesPerKm);
     const seconds = Math.round((minutesPerKm - minutes) * 60);
