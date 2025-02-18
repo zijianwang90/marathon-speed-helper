@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -7,41 +7,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Timer, ArrowUpDown } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Slider } from "@/components/ui/slider";
 
 const PaceCalculator = () => {
-  const [marathonTime, setMarathonTime] = useState({ hours: "", minutes: "" });
+  const [totalMinutes, setTotalMinutes] = useState(180); // 默认3小时
   const [treadmillSpeed, setTreadmillSpeed] = useState("");
-  const [unit, setUnit] = useState("km"); // km or mile
+  const [unit, setUnit] = useState("km");
   const { toast } = useToast();
+
+  const formatTime = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}:${mins.toString().padStart(2, '0')}`;
+  };
 
   const calculatePace = (totalMinutes: number, distance: number) => {
     const paceMinutes = totalMinutes / distance;
     const minutes = Math.floor(paceMinutes);
     const seconds = Math.round((paceMinutes - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const handleMarathonCalculation = () => {
-    const hours = parseInt(marathonTime.hours) || 0;
-    const minutes = parseInt(marathonTime.minutes) || 0;
-    
-    if (hours === 0 && minutes === 0) {
-      toast({
-        title: "请输入有效时间",
-        description: "请输入小时或分钟",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const totalMinutes = hours * 60 + minutes;
-    const distance = unit === "km" ? 42.195 : 26.2;
-    const pace = calculatePace(totalMinutes, distance);
-
-    toast({
-      title: "配速计算结果",
-      description: `您的目标配速为: ${pace} 分钟/${unit}`,
-    });
   };
 
   const handleTreadmillConversion = () => {
@@ -55,12 +39,17 @@ const PaceCalculator = () => {
     }
 
     const speed = parseFloat(treadmillSpeed);
-    const roadSpeed = speed * 1.04; // 简单的跑步机到路跑速度转换
+    const roadSpeed = speed * 1.04;
 
     toast({
       title: "速度转换结果",
       description: `跑步机 ${speed} ${unit}/h ≈ 路跑 ${roadSpeed.toFixed(1)} ${unit}/h`,
     });
+  };
+
+  const getCurrentPace = () => {
+    const distance = unit === "km" ? 42.195 : 26.2;
+    return calculatePace(totalMinutes, distance);
   };
 
   return (
@@ -88,33 +77,29 @@ const PaceCalculator = () => {
 
         <TabsContent value="marathon">
           <Card>
-            <CardContent className="space-y-4 pt-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>小时</Label>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    value={marathonTime.hours}
-                    onChange={(e) => setMarathonTime(prev => ({ ...prev, hours: e.target.value }))}
-                  />
+            <CardContent className="space-y-6 pt-6">
+              <div className="text-center space-y-2">
+                <div className="text-2xl font-bold text-primary">
+                  目标完赛时间: {formatTime(totalMinutes)}
                 </div>
-                <div className="space-y-2">
-                  <Label>分钟</Label>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    value={marathonTime.minutes}
-                    onChange={(e) => setMarathonTime(prev => ({ ...prev, minutes: e.target.value }))}
-                  />
+                <div className="text-4xl font-bold">
+                  配速: {getCurrentPace()} 分钟/{unit}
                 </div>
               </div>
-              <Button 
-                className="w-full mt-4" 
-                onClick={handleMarathonCalculation}
-              >
-                计算配速
-              </Button>
+              
+              <div className="space-y-4">
+                <Label>调整完赛时间</Label>
+                <Slider 
+                  defaultValue={[180]}
+                  max={360}
+                  min={120}
+                  step={1}
+                  onValueChange={(value) => setTotalMinutes(value[0])}
+                />
+                <div className="text-sm text-gray-500 text-center">
+                  拖动滑块调整时间 (2-6小时)
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
