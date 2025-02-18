@@ -33,8 +33,12 @@ const PaceCalculator = () => {
     return calculatePace(totalMinutes, distance);
   };
 
-  const calculateRoadSpeed = (treadmillSpeed: number) => {
-    return (treadmillSpeed * 1.04).toFixed(1);
+  const calculateRoadPace = (speedKmh: number) => {
+    const actualSpeed = speedKmh * 1.04; // 考虑跑步机到路跑的转换
+    const minutesPerUnit = 60 / actualSpeed; // 每单位距离所需分钟数
+    const minutes = Math.floor(minutesPerUnit);
+    const seconds = Math.round((minutesPerUnit - minutes) * 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -97,7 +101,7 @@ const PaceCalculator = () => {
                   跑步机速度: {treadmillSpeed} {unit}/h
                 </div>
                 <div className="text-4xl font-bold">
-                  路跑速度: {calculateRoadSpeed(treadmillSpeed)} {unit}/h
+                  路跑配速: {calculateRoadPace(treadmillSpeed)} 分钟/{unit}
                 </div>
               </div>
               
