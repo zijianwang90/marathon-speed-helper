@@ -11,7 +11,7 @@ import { Slider } from "@/components/ui/slider";
 
 const PaceCalculator = () => {
   const [totalMinutes, setTotalMinutes] = useState(180); // 默认3小时
-  const [treadmillSpeed, setTreadmillSpeed] = useState("");
+  const [treadmillSpeed, setTreadmillSpeed] = useState(10); // 默认10km/h或mph
   const [unit, setUnit] = useState("km");
   const { toast } = useToast();
 
@@ -28,28 +28,13 @@ const PaceCalculator = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleTreadmillConversion = () => {
-    if (!treadmillSpeed) {
-      toast({
-        title: "请输入速度",
-        description: "请输入跑步机速度",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const speed = parseFloat(treadmillSpeed);
-    const roadSpeed = speed * 1.04;
-
-    toast({
-      title: "速度转换结果",
-      description: `跑步机 ${speed} ${unit}/h ≈ 路跑 ${roadSpeed.toFixed(1)} ${unit}/h`,
-    });
-  };
-
   const getCurrentPace = () => {
     const distance = unit === "km" ? 42.195 : 26.2;
     return calculatePace(totalMinutes, distance);
+  };
+
+  const calculateRoadSpeed = (treadmillSpeed: number) => {
+    return (treadmillSpeed * 1.04).toFixed(1);
   };
 
   return (
@@ -106,22 +91,29 @@ const PaceCalculator = () => {
 
         <TabsContent value="treadmill">
           <Card>
-            <CardContent className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label>跑步机速度 ({unit}/h)</Label>
-                <Input
-                  type="number"
-                  placeholder={`输入跑步机速度 (${unit}/h)`}
-                  value={treadmillSpeed}
-                  onChange={(e) => setTreadmillSpeed(e.target.value)}
-                />
+            <CardContent className="space-y-6 pt-6">
+              <div className="text-center space-y-2">
+                <div className="text-2xl font-bold text-primary">
+                  跑步机速度: {treadmillSpeed} {unit}/h
+                </div>
+                <div className="text-4xl font-bold">
+                  路跑速度: {calculateRoadSpeed(treadmillSpeed)} {unit}/h
+                </div>
               </div>
-              <Button 
-                className="w-full" 
-                onClick={handleTreadmillConversion}
-              >
-                换算路跑速度
-              </Button>
+              
+              <div className="space-y-4">
+                <Label>调整跑步机速度</Label>
+                <Slider 
+                  defaultValue={[10]}
+                  max={20}
+                  min={4}
+                  step={0.1}
+                  onValueChange={(value) => setTreadmillSpeed(value[0])}
+                />
+                <div className="text-sm text-gray-500 text-center">
+                  拖动滑块调整速度 (4-20 {unit}/h)
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
