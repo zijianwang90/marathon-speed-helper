@@ -67,12 +67,12 @@ const PaceCalculator = () => {
     <div className="max-w-md mx-auto p-6 space-y-8 animate-fade-in">
       <h1 className="text-3xl font-bold text-center mb-8">马拉松配速助手</h1>
       
-      <div className="flex justify-center mb-6">
+      <Tabs defaultValue="km" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="km" onClick={() => setUnit("km")}>公里</TabsTrigger>
           <TabsTrigger value="mile" onClick={() => setUnit("mile")}>英里</TabsTrigger>
         </TabsList>
-      </div>
+      </Tabs>
 
       <Tabs defaultValue="marathon" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
