@@ -12,6 +12,7 @@ const PaceCalculator = () => {
   const [totalMinutes, setTotalMinutes] = useState(180); // 默认3小时
   const [treadmillSpeed, setTreadmillSpeed] = useState(10); // 默认10km/h或mph
   const [unit, setUnit] = useState("km");
+  const [raceType, setRaceType] = useState("marathon"); // 新增赛程类型状态
   const { toast } = useToast();
 
   const formatTime = (minutes: number) => {
@@ -27,8 +28,35 @@ const PaceCalculator = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const getRaceDistance = () => {
+    if (unit === "km") {
+      switch (raceType) {
+        case "marathon": return 42.195;
+        case "halfMarathon": return 21.0975;
+        case "10k": return 10;
+        default: return 42.195;
+      }
+    } else {
+      switch (raceType) {
+        case "marathon": return 26.2;
+        case "halfMarathon": return 13.1;
+        case "10k": return 6.2;
+        default: return 26.2;
+      }
+    }
+  };
+
+  const getDefaultTime = (type: string) => {
+    switch (type) {
+      case "marathon": return 180;
+      case "halfMarathon": return 90;
+      case "10k": return 40;
+      default: return 180;
+    }
+  };
+
   const getCurrentPace = () => {
-    const distance = unit === "km" ? 42.195 : 26.2;
+    const distance = getRaceDistance();
     return calculatePace(totalMinutes, distance);
   };
 
@@ -38,6 +66,11 @@ const PaceCalculator = () => {
     const minutes = Math.floor(minutesPerKm);
     const seconds = Math.round((minutesPerKm - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleRaceTypeChange = (type: string) => {
+    setRaceType(type);
+    setTotalMinutes(getDefaultTime(type));
   };
 
   return (
@@ -66,6 +99,31 @@ const PaceCalculator = () => {
         <TabsContent value="marathon">
           <Card>
             <CardContent className="space-y-6 pt-6">
+              <div className="space-y-4">
+                <Tabs defaultValue="marathon" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger 
+                      value="marathon" 
+                      onClick={() => handleRaceTypeChange("marathon")}
+                    >
+                      全程马拉松
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="halfMarathon" 
+                      onClick={() => handleRaceTypeChange("halfMarathon")}
+                    >
+                      半程马拉松
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="10k" 
+                      onClick={() => handleRaceTypeChange("10k")}
+                    >
+                      10公里
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
               <div className="text-center space-y-2">
                 <div className="text-2xl font-bold text-primary">
                   目标完赛时间: {formatTime(totalMinutes)}
@@ -78,14 +136,16 @@ const PaceCalculator = () => {
               <div className="space-y-4">
                 <Label>调整完赛时间</Label>
                 <Slider 
-                  defaultValue={[180]}
-                  max={360}
-                  min={120}
+                  value={[totalMinutes]}
+                  max={raceType === "marathon" ? 360 : raceType === "halfMarathon" ? 180 : 90}
+                  min={raceType === "marathon" ? 120 : raceType === "halfMarathon" ? 60 : 30}
                   step={1}
                   onValueChange={(value) => setTotalMinutes(value[0])}
                 />
                 <div className="text-sm text-gray-500 text-center">
-                  拖动滑块调整时间 (2-6小时)
+                  拖动滑块调整时间 ({raceType === "marathon" ? "2-6小时" : 
+                    raceType === "halfMarathon" ? "1-3小时" : 
+                    "30-90分钟"})
                 </div>
               </div>
             </CardContent>
