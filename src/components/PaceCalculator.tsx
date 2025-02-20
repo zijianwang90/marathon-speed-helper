@@ -18,6 +18,15 @@ const PaceCalculator = () => {
   const [distance, setDistance] = useState<Distance>('full');
   const { toast } = useToast();
 
+  const getTimeRange = () => {
+    switch (distance) {
+      case 'full': return { min: 120, max: 360 }; // 2-6小时
+      case 'half': return { min: 60, max: 180 };  // 1-3小时
+      case '10k': return { min: 30, max: 90 };    // 30-90分钟
+      default: return { min: 120, max: 360 };
+    }
+  };
+
   const getDistance = () => {
     if (unit === "km") {
       switch (distance) {
@@ -45,6 +54,15 @@ const PaceCalculator = () => {
     }
   };
 
+  const getTimeRangeText = () => {
+    const { min, max } = getTimeRange();
+    if (min >= 60) {
+      return `${min/60}-${max/60}小时`;
+    } else {
+      return `${min}-${max}分钟`;
+    }
+  };
+
   const toggleUnit = () => {
     setUnit(prev => {
       const newUnit = prev === "km" ? "mile" : "km";
@@ -69,7 +87,6 @@ const PaceCalculator = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // 计算当前每公里/英里配速（分钟）
   const getCurrentPaceMinutes = () => {
     return totalMinutes / getDistance();
   };
@@ -78,7 +95,6 @@ const PaceCalculator = () => {
     return calculatePace(totalMinutes, getDistance());
   };
 
-  // 切换距离时保持配速
   const handleDistanceChange = (newDistance: Distance) => {
     const currentPaceMinutes = getCurrentPaceMinutes();
     const newDistance_value = unit === "km" ? 
@@ -86,7 +102,12 @@ const PaceCalculator = () => {
       (newDistance === 'full' ? 26.2 : newDistance === 'half' ? 13.1 : 6.2);
     
     const newTotalMinutes = Math.round(currentPaceMinutes * newDistance_value);
-    setTotalMinutes(newTotalMinutes);
+    
+    // 确保新的完赛时间在合理范围内
+    const { min, max } = getTimeRange();
+    const adjustedTime = Math.min(Math.max(newTotalMinutes, min), max);
+    
+    setTotalMinutes(adjustedTime);
     setDistance(newDistance);
   };
 
@@ -157,14 +178,14 @@ const PaceCalculator = () => {
                 <div className="space-y-4">
                   <Label>调整完赛时间</Label>
                   <Slider 
-                    defaultValue={[180]}
-                    max={360}
-                    min={120}
+                    value={[totalMinutes]}
+                    max={getTimeRange().max}
+                    min={getTimeRange().min}
                     step={1}
                     onValueChange={(value) => setTotalMinutes(value[0])}
                   />
                   <div className="text-sm text-gray-500 text-center">
-                    拖动滑块调整时间 (2-6小时)
+                    拖动滑块调整时间 ({getTimeRangeText()})
                   </div>
                 </div>
               </CardContent>
