@@ -9,11 +9,41 @@ import { Timer, ArrowUpDown } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Slider } from "@/components/ui/slider";
 
+type Distance = 'full' | 'half' | '10k';
+
 const PaceCalculator = () => {
   const [totalMinutes, setTotalMinutes] = useState(180);
   const [treadmillSpeed, setTreadmillSpeed] = useState(10);
   const [unit, setUnit] = useState("km");
+  const [distance, setDistance] = useState<Distance>('full');
   const { toast } = useToast();
+
+  const getDistance = () => {
+    if (unit === "km") {
+      switch (distance) {
+        case 'full': return 42.195;
+        case 'half': return 21.0975;
+        case '10k': return 10;
+        default: return 42.195;
+      }
+    } else {
+      switch (distance) {
+        case 'full': return 26.2;
+        case 'half': return 13.1;
+        case '10k': return 6.2;
+        default: return 26.2;
+      }
+    }
+  };
+
+  const getDistanceLabel = () => {
+    switch (distance) {
+      case 'full': return '全程马拉松';
+      case 'half': return '半程马拉松';
+      case '10k': return '10公里';
+      default: return '全程马拉松';
+    }
+  };
 
   const toggleUnit = () => {
     setUnit(prev => {
@@ -40,8 +70,7 @@ const PaceCalculator = () => {
   };
 
   const getCurrentPace = () => {
-    const distance = unit === "km" ? 42.195 : 26.2;
-    return calculatePace(totalMinutes, distance);
+    return calculatePace(totalMinutes, getDistance());
   };
 
   const calculateRoadPace = (speedKmh: number) => {
@@ -72,7 +101,34 @@ const PaceCalculator = () => {
           <TabsContent value="marathon">
             <Card>
               <CardContent className="space-y-6 pt-6">
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    variant={distance === 'full' ? "default" : "outline"}
+                    className="w-full"
+                    onClick={() => setDistance('full')}
+                  >
+                    全马
+                  </Button>
+                  <Button
+                    variant={distance === 'half' ? "default" : "outline"}
+                    className="w-full"
+                    onClick={() => setDistance('half')}
+                  >
+                    半马
+                  </Button>
+                  <Button
+                    variant={distance === '10k' ? "default" : "outline"}
+                    className="w-full"
+                    onClick={() => setDistance('10k')}
+                  >
+                    10KM
+                  </Button>
+                </div>
+
                 <div className="text-center space-y-2">
+                  <div className="text-lg text-gray-600">
+                    {getDistanceLabel()}
+                  </div>
                   <div className="text-2xl font-bold text-primary">
                     目标完赛时间: {formatTime(totalMinutes)}
                   </div>
