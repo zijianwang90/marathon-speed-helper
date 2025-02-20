@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Timer, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Timer, ArrowUpDown } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Slider } from "@/components/ui/slider";
 
@@ -131,15 +131,10 @@ const PaceCalculator = () => {
 
       <Button
         variant="outline"
-        size="icon"
-        className="fixed bottom-6 right-6 rounded-full w-12 h-12 shadow-lg hover:shadow-xl transition-all duration-300 bg-white hover:bg-gray-50"
+        className="fixed bottom-6 right-6 rounded-full px-4 h-12 shadow-lg hover:shadow-xl transition-all duration-300 bg-white hover:bg-gray-50 font-semibold text-primary"
         onClick={toggleUnit}
       >
-        {unit === "km" ? (
-          <ArrowUp className="w-6 h-6 text-primary transition-transform hover:scale-110" />
-        ) : (
-          <ArrowDown className="w-6 h-6 text-primary transition-transform hover:scale-110" />
-        )}
+        {unit === "km" ? "KM" : "MI"}
       </Button>
     </div>
   );
