@@ -69,8 +69,25 @@ const PaceCalculator = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  // 计算当前每公里/英里配速（分钟）
+  const getCurrentPaceMinutes = () => {
+    return totalMinutes / getDistance();
+  };
+
   const getCurrentPace = () => {
     return calculatePace(totalMinutes, getDistance());
+  };
+
+  // 切换距离时保持配速
+  const handleDistanceChange = (newDistance: Distance) => {
+    const currentPaceMinutes = getCurrentPaceMinutes();
+    const newDistance_value = unit === "km" ? 
+      (newDistance === 'full' ? 42.195 : newDistance === 'half' ? 21.0975 : 10) :
+      (newDistance === 'full' ? 26.2 : newDistance === 'half' ? 13.1 : 6.2);
+    
+    const newTotalMinutes = Math.round(currentPaceMinutes * newDistance_value);
+    setTotalMinutes(newTotalMinutes);
+    setDistance(newDistance);
   };
 
   const calculateRoadPace = (speedKmh: number) => {
@@ -105,21 +122,21 @@ const PaceCalculator = () => {
                   <Button
                     variant={distance === 'full' ? "default" : "outline"}
                     className="w-full"
-                    onClick={() => setDistance('full')}
+                    onClick={() => handleDistanceChange('full')}
                   >
                     全马
                   </Button>
                   <Button
                     variant={distance === 'half' ? "default" : "outline"}
                     className="w-full"
-                    onClick={() => setDistance('half')}
+                    onClick={() => handleDistanceChange('half')}
                   >
                     半马
                   </Button>
                   <Button
                     variant={distance === '10k' ? "default" : "outline"}
                     className="w-full"
-                    onClick={() => setDistance('10k')}
+                    onClick={() => handleDistanceChange('10k')}
                   >
                     10KM
                   </Button>
