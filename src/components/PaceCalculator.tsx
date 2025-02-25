@@ -187,12 +187,16 @@ const PaceCalculator = () => {
           <TabsContent value="treadmill">
             <Card>
               <CardContent className="space-y-6 pt-6">
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-primary">
-                    跑步机速度: {treadmillSpeed} {unit}/h
+                <div className="text-center space-y-4">
+                  <div className="text-lg text-gray-600">跑步机速度</div>
+                  <div className="text-5xl font-bold text-primary">
+                    {treadmillSpeed} {unit}/h
                   </div>
-                  <div className="text-4xl font-bold">
-                    路跑配速: {calculateRoadPace(treadmillSpeed)} 分钟/{unit}
+                  <div>
+                    <div className="text-lg text-gray-600 mb-1">等效路跑配速</div>
+                    <div className="text-2xl text-gray-600">
+                      {calculateRoadPace(treadmillSpeed)} 分钟/{unit}
+                    </div>
                   </div>
                 </div>
                 
