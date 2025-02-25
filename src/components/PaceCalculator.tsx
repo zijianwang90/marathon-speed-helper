@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -96,18 +95,6 @@ const PaceCalculator = () => {
   };
 
   const handleDistanceChange = (newDistance: Distance) => {
-    const currentPaceMinutes = getCurrentPaceMinutes();
-    const newDistance_value = unit === "km" ? 
-      (newDistance === 'full' ? 42.195 : newDistance === 'half' ? 21.0975 : 10) :
-      (newDistance === 'full' ? 26.2 : newDistance === 'half' ? 13.1 : 6.2);
-    
-    const newTotalMinutes = Math.round(currentPaceMinutes * newDistance_value);
-    
-    // 确保新的完赛时间在合理范围内
-    const { min, max } = getTimeRange();
-    const adjustedTime = Math.min(Math.max(newTotalMinutes, min), max);
-    
-    setTotalMinutes(adjustedTime);
     setDistance(newDistance);
   };
 
