@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,20 +12,15 @@ import { Slider } from "@/components/ui/slider";
 type Distance = 'full' | 'half' | '10k';
 
 const PaceCalculator = () => {
-  const [totalMinutes, setTotalMinutes] = useState(180);
+  const [paceSeconds, setPaceSeconds] = useState(300); // 5:00/km的配速，用秒表示
   const [treadmillSpeed, setTreadmillSpeed] = useState(10);
   const [unit, setUnit] = useState("km");
   const [distance, setDistance] = useState<Distance>('full');
   const { toast } = useToast();
 
-  const getTimeRange = () => {
-    switch (distance) {
-      case 'full': return { min: 120, max: 360 }; // 2-6小时
-      case 'half': return { min: 60, max: 180 };  // 1-3小时
-      case '10k': return { min: 30, max: 90 };    // 30-90分钟
-      default: return { min: 120, max: 360 };
-    }
-  };
+  // 配速范围：2:30-7:00，转换为秒
+  const MIN_PACE = 150; // 2:30 = 150秒
+  const MAX_PACE = 420; // 7:00 = 420秒
 
   const getDistance = () => {
     if (unit === "km") {
@@ -53,15 +49,6 @@ const PaceCalculator = () => {
     }
   };
 
-  const getTimeRangeText = () => {
-    const { min, max } = getTimeRange();
-    if (min >= 60) {
-      return `${min/60}-${max/60}小时`;
-    } else {
-      return `${min}-${max}分钟`;
-    }
-  };
-
   const toggleUnit = () => {
     setUnit(prev => {
       const newUnit = prev === "km" ? "mile" : "km";
@@ -79,23 +66,28 @@ const PaceCalculator = () => {
     return `${hours}:${mins.toString().padStart(2, '0')}`;
   };
 
-  const calculatePace = (totalMinutes: number, distance: number) => {
-    const paceMinutes = totalMinutes / distance;
-    const minutes = Math.floor(paceMinutes);
-    const seconds = Math.round((paceMinutes - minutes) * 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const getCurrentPaceMinutes = () => {
-    return totalMinutes / getDistance();
+  const formatPace = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
   const getCurrentPace = () => {
-    return calculatePace(totalMinutes, getDistance());
+    return formatPace(paceSeconds);
+  };
+
+  const getTotalMinutes = () => {
+    const distanceInKm = getDistance();
+    return Math.round((paceSeconds / 60) * distanceInKm);
   };
 
   const handleDistanceChange = (newDistance: Distance) => {
+    // 只改变距离，保持配速不变
     setDistance(newDistance);
+  };
+
+  const handlePaceChange = (newPaceSeconds: number) => {
+    setPaceSeconds(newPaceSeconds);
   };
 
   const calculateRoadPace = (speedKmh: number) => {
@@ -104,6 +96,10 @@ const PaceCalculator = () => {
     const minutes = Math.floor(minutesPerKm);
     const seconds = Math.round((minutesPerKm - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const getPaceRangeText = () => {
+    return `${formatPace(MIN_PACE)}-${formatPace(MAX_PACE)}/km`;
   };
 
   return (
@@ -155,7 +151,7 @@ const PaceCalculator = () => {
                     {getDistanceLabel()}
                   </div>
                   <div className="text-2xl font-bold text-primary">
-                    目标完赛时间: {formatTime(totalMinutes)}
+                    目标完赛时间: {formatTime(getTotalMinutes())}
                   </div>
                   <div className="text-4xl font-bold">
                     配速: {getCurrentPace()} 分钟/{unit}
@@ -163,16 +159,16 @@ const PaceCalculator = () => {
                 </div>
                 
                 <div className="space-y-4">
-                  <Label>调整完赛时间</Label>
+                  <Label>调整配速</Label>
                   <Slider 
-                    value={[totalMinutes]}
-                    max={getTimeRange().max}
-                    min={getTimeRange().min}
-                    step={1}
-                    onValueChange={(value) => setTotalMinutes(value[0])}
+                    value={[paceSeconds]}
+                    max={MAX_PACE}
+                    min={MIN_PACE}
+                    step={5}
+                    onValueChange={(value) => handlePaceChange(value[0])}
                   />
                   <div className="text-sm text-gray-500 text-center">
-                    拖动滑块调整时间 ({getTimeRangeText()})
+                    拖动滑块调整配速 ({getPaceRangeText()})
                   </div>
                 </div>
               </CardContent>
