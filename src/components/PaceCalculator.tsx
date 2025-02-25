@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -76,9 +75,16 @@ const PaceCalculator = () => {
     return formatPace(paceSeconds);
   };
 
+  const formatTimeWithSeconds = (totalMinutes: number) => {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = Math.floor(totalMinutes % 60);
+    const seconds = Math.round((totalMinutes % 1) * 60);
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   const getTotalMinutes = () => {
     const distanceInKm = getDistance();
-    return Math.round((paceSeconds / 60) * distanceInKm);
+    return (paceSeconds / 60) * distanceInKm;
   };
 
   const handleDistanceChange = (newDistance: Distance) => {
@@ -146,14 +152,17 @@ const PaceCalculator = () => {
                   </Button>
                 </div>
 
-                <div className="text-center space-y-2">
+                <div className="text-center space-y-4">
                   <div className="text-lg text-gray-600">
                     {getDistanceLabel()}
                   </div>
-                  <div className="text-2xl font-bold text-primary">
-                    目标完赛时间: {formatTime(getTotalMinutes())}
+                  <div>
+                    <div className="text-lg text-gray-600 mb-1">目标完赛时间</div>
+                    <div className="text-5xl font-bold text-primary">
+                      {formatTimeWithSeconds(getTotalMinutes())}
+                    </div>
                   </div>
-                  <div className="text-4xl font-bold">
+                  <div className="text-2xl text-gray-600">
                     配速: {getCurrentPace()} 分钟/{unit}
                   </div>
                 </div>
