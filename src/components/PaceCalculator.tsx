@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,10 +9,7 @@ import { Timer, ArrowUpDown, HelpCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Slider } from "@/components/ui/slider";
 import {
-  Tooltip,
-  TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
   ResponsiveTooltip,
 } from "@/components/ui/tooltip";
 
@@ -24,8 +22,22 @@ const PaceCalculator = () => {
   const [distance, setDistance] = useState<Distance>('full');
   const { toast } = useToast();
 
-  const MIN_PACE = 150; // 2:30 = 150秒
-  const MAX_PACE = 420; // 7:00 = 420秒
+  // 为不同单位设置不同的配速范围
+  const getPaceRange = () => {
+    if (unit === "km") {
+      return {
+        MIN_PACE: 150, // 2:30 min/km
+        MAX_PACE: 420, // 7:00 min/km
+      };
+    } else {
+      return {
+        MIN_PACE: 240, // 4:00 min/mile
+        MAX_PACE: 660, // 11:00 min/mile
+      };
+    }
+  };
+
+  const { MIN_PACE, MAX_PACE } = getPaceRange();
 
   const getDistance = () => {
     if (unit === "km") {
@@ -57,6 +69,12 @@ const PaceCalculator = () => {
   const toggleUnit = () => {
     setUnit(prev => {
       const newUnit = prev === "km" ? "mile" : "km";
+      // 转换当前配速到新单位
+      if (newUnit === "mile") {
+        setPaceSeconds(Math.round(paceSeconds * 1.609344)); // km -> mile
+      } else {
+        setPaceSeconds(Math.round(paceSeconds / 1.609344)); // mile -> km
+      }
       toast({
         description: `单位已切换为${newUnit === "km" ? "公里" : "英里"}`,
         duration: 1500,
@@ -117,7 +135,7 @@ const PaceCalculator = () => {
   };
 
   const getPaceRangeText = () => {
-    return `${formatPace(MIN_PACE)}-${formatPace(MAX_PACE)}/km`;
+    return `${formatPace(MIN_PACE)}-${formatPace(MAX_PACE)}/${unit}`;
   };
 
   return (
