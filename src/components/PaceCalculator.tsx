@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
+  ResponsiveTooltip,
 } from "@/components/ui/tooltip";
 
 type Distance = 'full' | 'half' | '10k';
@@ -213,17 +214,16 @@ const PaceCalculator = () => {
                     <div>
                       <div className="text-lg text-gray-600 mb-1 flex items-center justify-center gap-2">
                         等效路跑配速
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <HelpCircle className="h-4 w-4" />
-                          </TooltipTrigger>
-                          <TooltipContent>
+                        <ResponsiveTooltip
+                          content={
                             <p className="max-w-xs text-sm">
                               在跑步机上跑步比在户外路跑更轻松，主要是因为没有空气阻力。
                               通常来说，跑步机上的速度需要提高约4%才能达到与户外路跑相同的训练效果。
                             </p>
-                          </TooltipContent>
-                        </Tooltip>
+                          }
+                        >
+                          <HelpCircle className="h-4 w-4" />
+                        </ResponsiveTooltip>
                       </div>
                       <div className="text-2xl text-gray-600">
                         {calculateRoadPace(treadmillSpeed)} 分钟/{unit}
