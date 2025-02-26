@@ -41,9 +41,15 @@ const ResponsiveTooltip = ({
   children: React.ReactNode;
   content: React.ReactNode;
 } & Omit<React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>, "content">) => {
+  const [isOpen, setIsOpen] = React.useState(false)
+
   return (
-    <Tooltip delayDuration={0}>
-      <TooltipTrigger asChild>
+    <Tooltip 
+      open={isOpen} 
+      onOpenChange={setIsOpen} 
+      delayDuration={0}
+    >
+      <TooltipTrigger asChild onClick={() => setIsOpen(prev => !prev)}>
         {children}
       </TooltipTrigger>
       <TooltipContent {...props}>
