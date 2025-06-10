@@ -120,7 +120,7 @@ const PaceCalculator = () => {
   };
 
   const calculateRoadPace = (speedKmh: number) => {
-    const actualSpeed = speedKmh * 1.04;
+    const actualSpeed = speedKmh / 1.04;
     const minutesPerKm = 60 / actualSpeed;
     const minutes = Math.floor(minutesPerKm);
     const seconds = Math.round((minutesPerKm - minutes) * 60);
