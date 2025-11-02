@@ -204,7 +204,7 @@ const PaceCalculator = () => {
                       value={[paceSeconds]}
                       max={MAX_PACE}
                       min={MIN_PACE}
-                      step={5}
+                      step={1}
                       onValueChange={(value) => handlePaceChange(value[0])}
                     />
                     <div className="text-sm text-gray-500 text-center">
