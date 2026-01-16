@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Timer, ArrowUpDown, HelpCircle } from "lucide-react";
+import { Timer, ArrowUpDown, HelpCircle, Languages } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Slider } from "@/components/ui/slider";
 import {
   TooltipProvider,
   ResponsiveTooltip,
 } from "@/components/ui/tooltip";
+import { useI18n } from "@/lib/i18n/context";
 
 type Distance = 'full' | 'half' | '10k';
 
@@ -21,6 +22,7 @@ const PaceCalculator = () => {
   const [unit, setUnit] = useState("km");
   const [distance, setDistance] = useState<Distance>('full');
   const { toast } = useToast();
+  const { t, language, setLanguage } = useI18n();
 
   // 为不同单位设置不同的配速范围
   const getPaceRange = () => {
@@ -59,10 +61,10 @@ const PaceCalculator = () => {
 
   const getDistanceLabel = () => {
     switch (distance) {
-      case 'full': return '全程马拉松';
-      case 'half': return '半程马拉松';
-      case '10k': return '10公里';
-      default: return '全程马拉松';
+      case 'full': return t.fullMarathon;
+      case 'half': return t.halfMarathon;
+      case '10k': return t.tenK;
+      default: return t.fullMarathon;
     }
   };
 
@@ -84,7 +86,7 @@ const PaceCalculator = () => {
         setTreadmillSpeed(Number((treadmillSpeed * 1.609344).toFixed(1)));
       }
       toast({
-        description: `单位已切换为${newUnit === "km" ? "公里" : "英里"}`,
+        description: `${t.unitSwitched}${newUnit === "km" ? t.kilometer : t.mile}`,
         duration: 1500,
       });
       return newUnit;
@@ -174,24 +176,29 @@ const PaceCalculator = () => {
 
   // 格式化单位显示（mile显示为mi）
   const formatUnit = () => {
-    return unit === "km" ? "km" : "mi";
+    return unit === "km" ? t.km : t.mi;
+  };
+
+  // 切换语言
+  const toggleLanguage = () => {
+    setLanguage(language === 'zh' ? 'en' : 'zh');
   };
 
   return (
     <TooltipProvider>
       <div className="min-h-screen relative">
         <div className="max-w-md mx-auto p-6 space-y-8 animate-fade-in">
-          <h1 className="text-3xl font-bold text-center mb-8">马拉松配速助手</h1>
+          <h1 className="text-3xl font-bold text-center mb-8">{t.appTitle}</h1>
 
           <Tabs defaultValue="marathon" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="marathon">
                 <Timer className="w-4 h-4 mr-2" />
-                配速计算
+                {t.paceCalculation}
               </TabsTrigger>
               <TabsTrigger value="treadmill">
                 <ArrowUpDown className="w-4 h-4 mr-2" />
-                跑步机转换
+                {t.treadmillConversion}
               </TabsTrigger>
             </TabsList>
 
@@ -204,21 +211,21 @@ const PaceCalculator = () => {
                       className="w-full"
                       onClick={() => handleDistanceChange('full')}
                     >
-                      全马
+                      {t.fullMarathon}
                     </Button>
                     <Button
                       variant={distance === 'half' ? "default" : "outline"}
                       className="w-full"
                       onClick={() => handleDistanceChange('half')}
                     >
-                      半马
+                      {t.halfMarathon}
                     </Button>
                     <Button
                       variant={distance === '10k' ? "default" : "outline"}
                       className="w-full"
                       onClick={() => handleDistanceChange('10k')}
                     >
-                      10KM
+                      {t.tenK}
                     </Button>
                   </div>
 
@@ -227,18 +234,18 @@ const PaceCalculator = () => {
                       {getDistanceLabel()}
                     </div>
                     <div>
-                      <div className="text-lg text-gray-600 mb-1">目标完赛时间</div>
+                      <div className="text-lg text-gray-600 mb-1">{t.targetFinishTime}</div>
                       <div className="text-5xl font-bold text-primary">
                         {formatTimeWithSeconds(getTotalMinutes())}
                       </div>
                     </div>
                     <div className="text-2xl text-gray-600">
-                      配速: {getCurrentPace()} 分钟/{unit}
+                      {t.pace}: {getCurrentPace()} {t.minutes}/{unit}
                     </div>
                   </div>
                   
                   <div className="space-y-4">
-                    <Label>调整配速</Label>
+                    <Label>{t.adjustPace}</Label>
                     <Slider 
                       value={[paceSeconds]}
                       max={MAX_PACE}
@@ -247,7 +254,7 @@ const PaceCalculator = () => {
                       onValueChange={(value) => handlePaceChange(value[0])}
                     />
                     <div className="text-sm text-gray-500 text-center">
-                      拖动滑块调整配速 ({getPaceRangeText()})
+                      {t.dragSliderToAdjustPace} ({getPaceRangeText()})
                     </div>
                   </div>
                 </CardContent>
@@ -258,24 +265,23 @@ const PaceCalculator = () => {
               <Card>
                 <CardContent className="space-y-6 pt-6">
                   <div className="text-center space-y-4">
-                    <div className="text-lg text-gray-600">跑步机速度</div>
+                    <div className="text-lg text-gray-600">{t.treadmillSpeed}</div>
                     <div className="text-5xl font-bold text-primary">
                       {treadmillSpeed} {formatUnit()}/h
                     </div>
                     <div>
-                      <div className="text-lg text-gray-600 mb-1">实际配速</div>
+                      <div className="text-lg text-gray-600 mb-1">{t.actualPace}</div>
                       <div className="text-2xl text-gray-600">
-                        {calculateTreadmillPace(treadmillSpeed)} 分钟/{unit}
+                        {calculateTreadmillPace(treadmillSpeed)} {t.minutes}/{unit}
                       </div>
                     </div>
                     <div>
                       <div className="text-lg text-gray-600 mb-1 flex items-center justify-center gap-2">
-                        等效路跑配速
+                        {t.equivalentRoadPace}
                         <ResponsiveTooltip
                           content={
                             <p className="max-w-xs text-sm">
-                              在跑步机上跑步比在户外路跑更轻松，主要是因为没有空气阻力。
-                              通常来说，跑步机上的速度需要提高约4%才能达到与户外路跑相同的训练效果。
+                              {t.treadmillTooltip}
                             </p>
                           }
                         >
@@ -283,13 +289,13 @@ const PaceCalculator = () => {
                         </ResponsiveTooltip>
                       </div>
                       <div className="text-2xl text-gray-600">
-                        {calculateRoadPace(treadmillSpeed)} 分钟/{unit}
+                        {calculateRoadPace(treadmillSpeed)} {t.minutes}/{unit}
                       </div>
                     </div>
                   </div>
                   
                   <div className="space-y-4">
-                    <Label>调整跑步机速度</Label>
+                    <Label>{t.adjustTreadmillSpeed}</Label>
                     <Slider 
                       value={[treadmillSpeed]}
                       max={getTreadmillSpeedRange().max}
@@ -298,7 +304,7 @@ const PaceCalculator = () => {
                       onValueChange={(value) => setTreadmillSpeed(value[0])}
                     />
                     <div className="text-sm text-gray-500 text-center">
-                      拖动滑块调整速度 ({getTreadmillSpeedRange().min}-{getTreadmillSpeedRange().max} {formatUnit()}/h)
+                      {t.dragSliderToAdjustSpeed} ({getTreadmillSpeedRange().min}-{getTreadmillSpeedRange().max} {formatUnit()}/h)
                     </div>
                   </div>
                 </CardContent>
@@ -313,6 +319,14 @@ const PaceCalculator = () => {
           onClick={toggleUnit}
         >
           {unit === "km" ? "KM" : "MI"}
+        </Button>
+        <Button
+          variant="outline"
+          className="fixed bottom-6 left-6 rounded-full px-4 h-12 shadow-lg hover:shadow-xl transition-all duration-300 bg-white hover:bg-gray-50 font-semibold text-primary"
+          onClick={toggleLanguage}
+        >
+          <Languages className="w-4 h-4 mr-2" />
+          {language === "zh" ? "EN" : "中文"}
         </Button>
       </div>
     </TooltipProvider>
