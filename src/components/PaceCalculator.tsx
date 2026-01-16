@@ -185,9 +185,11 @@ const PaceCalculator = () => {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen relative">
+      <main className="min-h-screen relative">
         <div className="max-w-md mx-auto p-6 space-y-8 animate-fade-in">
-          <h1 className="text-3xl font-bold text-center mb-8">{t.appTitle}</h1>
+          <header>
+            <h1 className="text-3xl font-bold text-center mb-8">{t.appTitle}</h1>
+          </header>
 
           <Tabs defaultValue="marathon" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -228,20 +230,20 @@ const PaceCalculator = () => {
                     </Button>
                   </div>
 
-                  <div className="text-center space-y-4">
-                    <div className="text-lg text-gray-600">
+                  <section className="text-center space-y-4" aria-label="配速计算结果">
+                    <h2 className="text-lg text-gray-600">
                       {getDistanceLabel()}
-                    </div>
+                    </h2>
                     <div>
-                      <div className="text-lg text-gray-600 mb-1">{t.targetFinishTime}</div>
-                      <div className="text-5xl font-bold text-primary">
+                      <h3 className="text-lg text-gray-600 mb-1">{t.targetFinishTime}</h3>
+                      <div className="text-5xl font-bold text-primary" role="timer" aria-label={`目标完赛时间: ${formatTimeWithSeconds(getTotalMinutes())}`}>
                         {formatTimeWithSeconds(getTotalMinutes())}
                       </div>
                     </div>
-                    <div className="text-2xl text-gray-600">
+                    <div className="text-2xl text-gray-600" aria-label={`当前配速: ${getCurrentPace()} ${t.minutes}/${unit}`}>
                       {t.pace}: {getCurrentPace()} {t.minutes}/{unit}
                     </div>
-                  </div>
+                  </section>
                   
                   <div className="space-y-4">
                     <Label>{t.adjustPace}</Label>
@@ -263,19 +265,19 @@ const PaceCalculator = () => {
             <TabsContent value="treadmill">
               <Card>
                 <CardContent className="space-y-6 pt-6">
-                  <div className="text-center space-y-4">
-                    <div className="text-lg text-gray-600">{t.treadmillSpeed}</div>
-                    <div className="text-5xl font-bold text-primary">
+                  <section className="text-center space-y-4" aria-label="跑步机速度转换结果">
+                    <h2 className="text-lg text-gray-600">{t.treadmillSpeed}</h2>
+                    <div className="text-5xl font-bold text-primary" aria-label={`跑步机速度: ${treadmillSpeed} ${formatUnit()}/h`}>
                       {treadmillSpeed} {formatUnit()}/h
                     </div>
                     <div>
-                      <div className="text-lg text-gray-600 mb-1">{t.actualPace}</div>
-                      <div className="text-2xl text-gray-600">
+                      <h3 className="text-lg text-gray-600 mb-1">{t.actualPace}</h3>
+                      <div className="text-2xl text-gray-600" aria-label={`实际配速: ${calculateTreadmillPace(treadmillSpeed)} ${t.minutes}/${unit}`}>
                         {calculateTreadmillPace(treadmillSpeed)} {t.minutes}/{unit}
                       </div>
                     </div>
                     <div>
-                      <div className="text-lg text-gray-600 mb-1 flex items-center justify-center gap-2">
+                      <h3 className="text-lg text-gray-600 mb-1 flex items-center justify-center gap-2">
                         {t.equivalentRoadPace}
                         <ResponsiveTooltip
                           content={
@@ -284,14 +286,14 @@ const PaceCalculator = () => {
                             </p>
                           }
                         >
-                          <HelpCircle className="h-4 w-4" />
+                          <HelpCircle className="h-4 w-4" aria-label="提示信息" />
                         </ResponsiveTooltip>
-                      </div>
-                      <div className="text-2xl text-gray-600">
+                      </h3>
+                      <div className="text-2xl text-gray-600" aria-label={`等效路跑配速: ${calculateRoadPace(treadmillSpeed)} ${t.minutes}/${unit}`}>
                         {calculateRoadPace(treadmillSpeed)} {t.minutes}/{unit}
                       </div>
                     </div>
-                  </div>
+                  </section>
                   
                   <div className="space-y-4">
                     <Label>{t.adjustTreadmillSpeed}</Label>
@@ -312,7 +314,8 @@ const PaceCalculator = () => {
           </Tabs>
         </div>
 
-        <Button
+        <nav aria-label="工具操作">
+          <Button
           variant="outline"
           className="fixed bottom-6 right-6 rounded-full px-4 h-12 shadow-lg hover:shadow-xl transition-all duration-300 bg-white hover:bg-gray-50 font-semibold text-primary"
           onClick={toggleUnit}
@@ -327,7 +330,8 @@ const PaceCalculator = () => {
           <Languages className="w-4 h-4 mr-2" />
           {language === "zh" ? "EN" : "中文"}
         </Button>
-      </div>
+        </nav>
+      </main>
     </TooltipProvider>
   );
 };
