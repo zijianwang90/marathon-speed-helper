@@ -75,6 +75,14 @@ const PaceCalculator = () => {
       } else {
         setPaceSeconds(Math.round(paceSeconds / 1.609344)); // mile -> km
       }
+      // 转换跑步机速度到新单位（保持实际速度不变）
+      if (newUnit === "mile") {
+        // 从 km/h 转换为 mi/h
+        setTreadmillSpeed(Number((treadmillSpeed / 1.609344).toFixed(1)));
+      } else {
+        // 从 mi/h 转换为 km/h
+        setTreadmillSpeed(Number((treadmillSpeed * 1.609344).toFixed(1)));
+      }
       toast({
         description: `单位已切换为${newUnit === "km" ? "公里" : "英里"}`,
         duration: 1500,
@@ -119,23 +127,54 @@ const PaceCalculator = () => {
     setPaceSeconds(newPaceSeconds);
   };
 
-  const calculateRoadPace = (speedKmh: number) => {
+  // 获取跑步机速度范围
+  const getTreadmillSpeedRange = () => {
+    if (unit === "km") {
+      return { min: 4, max: 20 };
+    } else {
+      // 将4-20 km/h转换为mi/h
+      return { 
+        min: Number((4 / 1.609344).toFixed(1)), 
+        max: Number((20 / 1.609344).toFixed(1)) 
+      };
+    }
+  };
+
+  // 将速度转换为km/h（用于计算）
+  const convertToKmh = (speed: number) => {
+    if (unit === "km") {
+      return speed;
+    } else {
+      return speed * 1.609344;
+    }
+  };
+
+  const calculateRoadPace = (speed: number) => {
+    const speedKmh = convertToKmh(speed);
     const actualSpeed = speedKmh / 1.04;
-    const minutesPerKm = 60 / actualSpeed;
-    const minutes = Math.floor(minutesPerKm);
-    const seconds = Math.round((minutesPerKm - minutes) * 60);
+    const distanceUnit = unit === "km" ? 1 : 1.609344; // 1 km 或 1 mile
+    const minutesPerUnit = (60 / actualSpeed) * distanceUnit;
+    const minutes = Math.floor(minutesPerUnit);
+    const seconds = Math.round((minutesPerUnit - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const calculateTreadmillPace = (speedKmh: number) => {
-    const minutesPerKm = 60 / speedKmh;
-    const minutes = Math.floor(minutesPerKm);
-    const seconds = Math.round((minutesPerKm - minutes) * 60);
+  const calculateTreadmillPace = (speed: number) => {
+    const speedKmh = convertToKmh(speed);
+    const distanceUnit = unit === "km" ? 1 : 1.609344; // 1 km 或 1 mile
+    const minutesPerUnit = (60 / speedKmh) * distanceUnit;
+    const minutes = Math.floor(minutesPerUnit);
+    const seconds = Math.round((minutesPerUnit - minutes) * 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const getPaceRangeText = () => {
     return `${formatPace(MIN_PACE)}-${formatPace(MAX_PACE)}/${unit}`;
+  };
+
+  // 格式化单位显示（mile显示为mi）
+  const formatUnit = () => {
+    return unit === "km" ? "km" : "mi";
   };
 
   return (
@@ -221,7 +260,7 @@ const PaceCalculator = () => {
                   <div className="text-center space-y-4">
                     <div className="text-lg text-gray-600">跑步机速度</div>
                     <div className="text-5xl font-bold text-primary">
-                      {treadmillSpeed} {unit}/h
+                      {treadmillSpeed} {formatUnit()}/h
                     </div>
                     <div>
                       <div className="text-lg text-gray-600 mb-1">实际配速</div>
@@ -252,14 +291,14 @@ const PaceCalculator = () => {
                   <div className="space-y-4">
                     <Label>调整跑步机速度</Label>
                     <Slider 
-                      defaultValue={[10]}
-                      max={20}
-                      min={4}
+                      value={[treadmillSpeed]}
+                      max={getTreadmillSpeedRange().max}
+                      min={getTreadmillSpeedRange().min}
                       step={0.1}
                       onValueChange={(value) => setTreadmillSpeed(value[0])}
                     />
                     <div className="text-sm text-gray-500 text-center">
-                      拖动滑块调整速度 (4-20 {unit}/h)
+                      拖动滑块调整速度 ({getTreadmillSpeedRange().min}-{getTreadmillSpeedRange().max} {formatUnit()}/h)
                     </div>
                   </div>
                 </CardContent>
