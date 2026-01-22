@@ -1,69 +1,73 @@
-# Welcome to your Lovable project
+# 马拉松配速助手
 
-## Project info
+专业的马拉松配速计算工具，帮助跑步爱好者计算全马、半马、10K的完赛时间和配速。支持跑步机速度转换，提供等效路跑配速计算。
 
-**URL**: https://lovable.dev/projects/5dbb4db4-b728-478b-9ab6-f299d813f391
+## 功能特性
 
-## How can I edit this code?
+- 🏃 马拉松配速计算（全马/半马/10K）
+- 🏃‍♀️ 跑步机速度转换
+- 📊 等效路跑配速计算
+- 🌍 支持中英文双语
+- 📱 响应式设计，支持移动端
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/5dbb4db4-b728-478b-9ab6-f299d813f391) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
+## 技术栈
 
 - Vite
-- TypeScript
 - React
-- shadcn-ui
+- TypeScript
 - Tailwind CSS
+- shadcn/ui
 
-## How can I deploy this project?
+## 本地开发
 
-Simply open [Lovable](https://lovable.dev/projects/5dbb4db4-b728-478b-9ab6-f299d813f391) and click on Share -> Publish.
+```bash
+# 安装依赖
+npm install
 
-## I want to use a custom domain - is that possible?
+# 启动开发服务器
+npm run dev
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+# 构建生产版本
+npm run build
+
+# 预览生产构建
+npm run preview
+```
+
+## Cloudflare Pages 部署配置
+
+### 构建设置
+
+在 Cloudflare Pages 项目设置中配置：
+
+- **Build command**: `npm run build`
+- **Build output directory**: `dist`
+- **Root directory**: `/` (留空或使用 `/`)
+
+### 环境变量
+
+无需特殊环境变量。
+
+### 注意事项
+
+1. 确保 `package-lock.json` 已提交到仓库
+2. 构建输出目录必须是 `dist`
+3. `_redirects` 文件会自动从 `public` 目录复制到 `dist` 目录
+
+## 项目结构
+
+```
+├── public/          # 静态资源
+│   ├── _redirects   # Cloudflare Pages 重定向规则
+│   ├── robots.txt   # SEO robots 文件
+│   └── sitemap.xml  # SEO 站点地图
+├── src/
+│   ├── components/  # React 组件
+│   ├── lib/         # 工具库和 i18n
+│   └── pages/       # 页面组件
+└── dist/            # 构建输出（不提交到 git）
+```
+
+## 许可证
+
+MIT

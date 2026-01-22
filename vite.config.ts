@@ -9,6 +9,19 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    // 确保静态资源有正确的 MIME 类型
+    rollupOptions: {
+      output: {
+        // 确保资源文件名包含 hash
+        assetFileNames: 'assets/[name].[hash].[ext]',
+        chunkFileNames: 'assets/[name].[hash].js',
+        entryFileNames: 'assets/[name].[hash].js',
+      },
+    },
+  },
   plugins: [
     react(),
     mode === 'development' &&
