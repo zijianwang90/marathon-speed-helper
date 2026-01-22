@@ -22,6 +22,8 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+  // 确保 _redirects 文件被正确复制
+  publicDir: 'public',
   plugins: [
     react(),
     mode === 'development' &&

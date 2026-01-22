@@ -178,6 +178,26 @@ const PaceCalculator = () => {
     return unit === "km" ? t.km : t.mi;
   };
 
+  // 获取另一种单位的速度（用于显示换算）
+  const getAlternateUnitSpeed = () => {
+    if (unit === "km") {
+      // 从 km/h 转换为 mi/h
+      return Number((treadmillSpeed / 1.609344).toFixed(1));
+    } else {
+      // 从 mi/h 转换为 km/h
+      return Number((treadmillSpeed * 1.609344).toFixed(1));
+    }
+  };
+
+  // 获取另一种单位的显示文本
+  const getAlternateUnitText = () => {
+    if (unit === "km") {
+      return t.mi;
+    } else {
+      return t.km;
+    }
+  };
+
   // 切换语言
   const toggleLanguage = () => {
     setLanguage(language === 'zh' ? 'en' : 'zh');
@@ -267,8 +287,13 @@ const PaceCalculator = () => {
                 <CardContent className="space-y-6 pt-6">
                   <section className="text-center space-y-4" aria-label="跑步机速度转换结果">
                     <h2 className="text-lg text-gray-600">{t.treadmillSpeed}</h2>
-                    <div className="text-5xl font-bold text-primary" aria-label={`跑步机速度: ${treadmillSpeed} ${formatUnit()}/h`}>
-                      {treadmillSpeed} {formatUnit()}/h
+                    <div>
+                      <div className="text-5xl font-bold text-primary" aria-label={`跑步机速度: ${treadmillSpeed} ${formatUnit()}/h`}>
+                        {treadmillSpeed} {formatUnit()}/h
+                      </div>
+                      <div className="text-sm text-gray-400 mt-1" aria-label={`换算为: ${getAlternateUnitSpeed()} ${getAlternateUnitText()}/h`}>
+                        ≈ {getAlternateUnitSpeed()} {getAlternateUnitText()}/h
+                      </div>
                     </div>
                     <div>
                       <h3 className="text-lg text-gray-600 mb-1">{t.actualPace}</h3>
