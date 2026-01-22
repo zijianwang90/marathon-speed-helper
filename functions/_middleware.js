@@ -6,20 +6,23 @@ export function onRequest(context) {
   const { request, next } = context;
   const url = new URL(request.url);
   
-  // Allow static assets to be served directly
+  // Allow static assets and existing files to be served directly
   if (
     url.pathname.startsWith('/assets/') ||
-    url.pathname.startsWith('/favicon.ico') ||
-    url.pathname.startsWith('/manifest.json') ||
-    url.pathname.startsWith('/robots.txt') ||
-    url.pathname.startsWith('/sitemap.xml') ||
-    url.pathname.startsWith('/og-image.png') ||
+    url.pathname === '/favicon.ico' ||
+    url.pathname === '/manifest.json' ||
+    url.pathname === '/robots.txt' ||
+    url.pathname === '/sitemap.xml' ||
+    url.pathname === '/og-image.png' ||
     url.pathname.startsWith('/icon-') ||
-    url.pathname.startsWith('/sw.js')
+    url.pathname === '/sw.js' ||
+    url.pathname === '/index.html'
   ) {
     return next();
   }
   
-  // For all other routes, serve index.html
-  return next(new Request(new URL('/index.html', request.url), request));
+  // For all other routes (SPA routes), serve index.html
+  // Use rewrite instead of redirect to avoid redirect loops
+  const rewrittenUrl = new URL('/index.html', request.url);
+  return next(new Request(rewrittenUrl, request));
 }
