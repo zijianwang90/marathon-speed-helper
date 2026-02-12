@@ -52,9 +52,8 @@ npm run preview
 
 1. 确保 `package-lock.json` 已提交到仓库
 2. 构建输出目录必须是 `dist`
-3. `_redirects` 文件会自动从 `public` 目录复制到 `dist` 目录
-4. 如果 `_redirects` 不工作，项目已包含 `functions/_middleware.js` 作为备选方案
-5. Node 版本：建议使用 Node 18.18.0+（项目包含 `.nvmrc` 文件）
+3. `_redirects` 文件（`/* /index.html 200`）用于 SPA 回退，由 `public` 复制到 `dist`
+4. Node 版本：建议使用 Node 18.18.0+（项目包含 `.nvmrc` 文件）
 
 ## 项目结构
 
